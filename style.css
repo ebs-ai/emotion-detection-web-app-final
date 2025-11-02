@@ -1,0 +1,143 @@
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container {
+  text-align: center;
+  margin-top: 50px;
+  flex: 1;
+}
+
+h1 {
+  font-size: 2.5em;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-weight: 300;
+  color: #e0e0e0;
+}
+
+.upload-form {
+  margin-top: 30px;
+}
+
+.file-label {
+  display: inline-block;
+  background: #ff9800;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-right: 10px;
+  transition: all 0.3s ease;
+}
+
+.file-label:hover {
+  background: #f57c00;
+  transform: scale(1.05);
+}
+
+input[type="file"] {
+  display: none;
+}
+
+button {
+  background-color: #26a69a;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #00897b;
+  transform: scale(1.05);
+}
+
+#preview {
+  margin-top: 25px;
+}
+
+#preview-img {
+  width: 220px;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  animation: fadeIn 0.6s ease-in;
+}
+
+#loading {
+  margin-top: 30px;
+}
+
+.spinner {
+  border: 6px solid rgba(255, 255, 255, 0.2);
+  border-top: 6px solid #ff9800;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.result-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 25px 40px;
+  margin-top: 40px;
+  display: inline-block;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  animation: fadeInUp 0.6s ease;
+}
+
+.result-img {
+  width: 250px;
+  border-radius: 15px;
+  margin-top: 15px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.emotion {
+  font-size: 2em;
+  font-weight: 600;
+  color: #ffeb3b;
+  text-transform: capitalize;
+}
+
+footer {
+  background: rgba(0,0,0,0.3);
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  font-size: 0.9em;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Emotion Detection</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      margin-top: 50px;
+      flex: 1;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-weight: 300;
+      color: #e0e0e0;
+    }
+
+    .upload-form {
+      margin-top: 30px;
+    }
+
+    .file-label {
+      display: inline-block;
+      background: #ff9800;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 500;
+      margin-right: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .file-label:hover {
+      background: #f57c00;
+      transform: scale(1.05);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    button {
+      background-color: #26a69a;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #00897b;
+      transform: scale(1.05);
+    }
+
+    #preview {
+      margin-top: 25px;
+    }
+
+    #preview-img {
+      width: 220px;
+      height: auto;
+      border-radius: 20px;
+      box-shadow: 0px 4px 20px rgba(0,0,0,0.4);
+      animation: fadeIn 0.6s ease-in;
+    }
+
+    #loading {
+      margin-top: 30px;
+      display: none;
+    }
+
+    .spinner {
+      border: 6px solid rgba(255, 255, 255, 0.2);
+      border-top: 6px solid #ff9800;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin: auto;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .result-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 25px 40px;
+      margin-top: 40px;
+      display: none;
+      box-shadow: 0px 4px 20px rgba(0,0,0,0.3);
+      animation: fadeInUp 0.8s ease forwards;
+    }
+
+    .result-img {
+      width: 250px;
+      border-radius: 15px;
+      margin-top: 15px;
+      box-shadow: 0px 4px 20px rgba(0,0,0,0.4);
+    }
+
+    .emotion-display {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-top: 15px;
+      animation: pulse 1.5s infinite;
+    }
+
+    .emoji {
+      font-size: 3.5em;
+      text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+
+    .emotion-text .emotion {
+      font-size: 1.8em;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .message {
+      font-size: 1em;
+      color: #e0e0e0;
+      margin-top: 5px;
+    }
+
+    footer {
+      background: rgba(0,0,0,0.3);
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      font-size: 0.9em;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 AI Emotion Detector</h1>
+    <p class="subtitle">Upload an image to see what emotion our AI detects!</p>
+
+    <form method="POST" enctype="multipart/form-data" class="upload-form" onsubmit="showLoading()">
+      <label for="image" class="file-label">
+        <i class="fas fa-upload"></i> Choose Image
+        <input type="file" id="image" name="image" accept="image/*" required onchange="previewImage(event)">
+      </label>
+      <button type="submit"><i class="fas fa-brain"></i> Analyze Emotion</button>
+    </form>
+
+    <div id="preview">
+      <img id="preview-img" src="#" alt="Preview" style="display:none;">
+    </div>
+
+    <!-- Loading animation -->
+    <div id="loading">
+      <div class="spinner"></div>
+      <p>Analyzing emotion...</p>
+    </div>
+
+    {% if emotion %}
+      <div class="result-card" id="result-card">
+        <h2><i class="fas fa-smile-beam"></i> Emotion Analysis Result</h2>
+
+        <div class="emotion-display">
+          <div class="emoji" id="emoji"></div>
+          <div class="emotion-text">
+            <p class="emotion">{{ emotion|capitalize }}</p>
+            <p class="message" id="message"></p>
+          </div>
+        </div>
+
+        {% if filename %}
+          <img src="{{ url_for('uploaded_file', filename=filename) }}"
+               alt="Uploaded Image" class="result-img">
+        {% endif %}
+      </div>
+
+      <script>
+        // hide spinner and show result box when analysis is done
+        document.getElementById("loading").style.display = "none";
+        const resultCard = document.getElementById("result-card");
+        resultCard.style.display = "inline-block";
+
+        // Dynamic emoji & message based on emotion
+        const emotion = "{{ emotion }}".toLowerCase();
+        const emojiDiv = document.getElementById("emoji");
+        const messageDiv = document.getElementById("message");
+
+        const emotions = {
+          happy:    { emoji: "😊", msg: "You look cheerful today! Keep smiling 😄", color: "#ffeb3b" },
+          sad:      { emoji: "😢", msg: "You seem down. Sending good vibes 💛", color: "#64b5f6" },
+          angry:    { emoji: "😡", msg: "Take a deep breath — it’ll be alright ❤️", color: "#ef5350" },
+          neutral:  { emoji: "😐", msg: "Calm and composed — balance is key ⚖️", color: "#bdbdbd" },
+          surprised:{ emoji: "😲", msg: "Whoa! Didn’t see that coming 😮", color: "#ffb74d" },
+          fearful:  { emoji: "😨", msg: "Everything’s okay — stay brave 💪", color: "#9575cd" },
+          disgust:  { emoji: "🤢", msg: "Something smells off? 😅", color: "#81c784" },
+        };
+
+        const chosen = emotions[emotion] || { emoji: "🙂", msg: "Emotion detected!", color: "#fff" };
+        emojiDiv.textContent = chosen.emoji;
+        messageDiv.textContent = chosen.msg;
+        emojiDiv.style.color = chosen.color;
+      </script>
+    {% endif %}
+  </div>
+
+  <footer>
+    <p>Developed by AKINOLA | CSC334 Project</p>
+  </footer>
+
+  <script>
+    function previewImage(event) {
+      const preview = document.getElementById('preview-img');
+      preview.src = URL.createObjectURL(event.target.files[0]);
+      preview.style.display = 'block';
+    }
+
+    function showLoading() {
+      document.getElementById('loading').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
